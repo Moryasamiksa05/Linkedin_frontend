@@ -11,9 +11,19 @@ const LoginForm = () => {
 
 	const { mutate: loginMutation, isLoading } = useMutation({
 		mutationFn: (userData) => axiosInstance.post("/auth/login", userData),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["authUser"] });
-		},
+	onSuccess: (res) => {
+  const token = res.data?.token; 
+  if (token) {
+    localStorage.setItem("token", token);
+    toast.success("Login successful");
+    queryClient.invalidateQueries({ queryKey: ["authUser"] });
+  } else {
+    toast.error("Login success, but token not received.");
+  }
+},
+
+
+
 		onError: (err) => {
 			toast.error(err.response.data.message || "Something went wrong");
 		},
